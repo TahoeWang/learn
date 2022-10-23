@@ -13,7 +13,7 @@ Golang设计者为了编程方便，提供了一些函数，这些函数不用�
 与其他语言不同，在Go语言中，实现类的时候无需从接口派生，不需要显式地声明类与接口的继承关系，具体代码如下：
 ```go
 type Foo struct { // Go 文法
-...
+    ...
 }
 var foo IFoo = new(Foo)
 ```
@@ -24,3 +24,19 @@ Go语言的反射实现了反射的大部分功能，但没有像Java语言那�
 
 ## go函数
 Go支持多个返回值。并不是所有返回值都必须赋值。在函数返回时没有被明确赋值的返回值都会被设置为默认值，比如result会被设为0.0， err会被设为nil。
+
+## 变量
+Go语言的变量声明方式与C和C++语言有明显的不同。对于纯粹的变量声明， Go语言引入了关键字var，而类型信息放在变量名之后，示例如下：
+```golang
+var v1 int
+var v2 string
+var v3 [10]int // 数组
+var v4 []int // 数组切片
+var v5 struct {
+    f int
+}
+var v6 *int // 指针
+var v7 map[string]int // map， key为string类型， value为int类型
+var v8 func(a int) int
+```
+变量声明语句不需要使用分号作为结束符。与C语言相比， Go语言摒弃了语句必须以分号作为语句结束标记的习惯，这点与python是一致的。
