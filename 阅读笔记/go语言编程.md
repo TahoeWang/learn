@@ -40,3 +40,10 @@ var v7 map[string]int // map， key为string类型， value为int类型
 var v8 func(a int) int
 ```
 变量声明语句不需要使用分号作为结束符。与C语言相比， Go语言摒弃了语句必须以分号作为语句结束标记的习惯，这点与python是一致的。
+var关键字的另一种用法是可以将若干个需要声明的变量放置在一起，免得程序员需要重复写var关键字，如下所示：
+```golang
+var (
+    v1 int
+    v2 string
+)
+```
