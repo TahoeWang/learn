@@ -151,11 +151,59 @@ goroutine 是 Go语言中的轻量级线程实现，由 Go 运行时（runtime�
 截止 Go 1.9 版本，暂时没有标准接口获取 goroutine 的 ID。
 
 #### work pool (goroutine 池子)
-goroutine 的工作模式：在工作中我们通常会使用可以指定启动的goroutine数量worker pool模式，控制goroutine的数量，防止goroutine泄漏和暴涨。
+goroutine 的工作模式：在工作中我们通常会使用可以指定启动的goroutine数量worker pool模式，控制goroutine的数量，防止goroutine泄漏和暴涨。例如：
+
+```golang
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// work_pool
+func worker(id int,jobs<-chan int,res chan<- int){
+	for job := range jobs{
+		fmt.Printf("worker:%d job:%d\n",id,job)
+		res <- job*2
+		time.Sleep(time.Millisecond*500)
+		fmt.Printf("worker:%d job:%d\n",id,job)
+	}
+
+}
+func main() {
+	jobs :=make(chan int,100)
+	res := make(chan int,100)
+
+	// 开启3个goroutine
+	for j:=0;j<3;j++{
+		go worker(j,jobs,res)
+	}
+    // channel中无值，range时，会阻塞下边语句执行，阻塞到channel关闭，再接着执行下边的语句
+    // 虽然目前jobs是空的，但worker不会range完退出，而是会一直等待jobs关闭。
+
+	// 发送5个任务
+	for i:=0;i<5;i++{
+		jobs <- i
+	}
+	close(jobs)
+    // 关闭jobs以后，worker接着执行下面的逻辑，结束goroutine
+	
+    //输出结果
+	for i:=0;i<5;i++{
+		ret := <-res
+		fmt.Println(ret)
+	}
+}
+```
+读取channel中的值时，若channel中无值，会阻塞后边的语句，那么通过range读取channel中的值，何时会跳出range接着执行？
+结论：1.channel的关闭时机：1）给channel调用close()且其中数据全部被消费结束。2）主线程关闭
 
 ## 接口
 不关注具体实现的都叫接口。例如rest接口。
 
 我们看下百度是怎么给出API的定义的：
 > API（Application Programming Interface,应用程序编程接口）是一些预先定义的函数，目的是提供应用程序与开发人员基于某软件或硬件得以访问一组例程的能力，而又无需访问源码，或理解内部工作机制的细节。
+
+
 
